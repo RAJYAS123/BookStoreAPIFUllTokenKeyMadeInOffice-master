@@ -62,7 +62,7 @@ namespace BookStore.API.Controllers
         public async Task<IActionResult> UpdateBook([FromBody] CustomerModel bookModel, [FromRoute] int id)
         {
             await _customerRepository.UpdateCustomerAsync(id, bookModel);
-            return Ok();
+            return CreatedAtAction(nameof(UpdateBook), new { Response = "Customer Updated Successfully" });
         }
 
 

@@ -1,6 +1,7 @@
 using BookStore.API.Data;
 using BookStore.API.Models;
 using BookStore.API.Repository;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -91,6 +92,12 @@ namespace BookStore.API
                         ValidIssuer = Configuration["JWT:ValidIssuer"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                     };
+                }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
+                {
+                    o.LoginPath = "/Account/Login";
+                    o.LogoutPath = "/Account/Login";
+                    o.AccessDeniedPath = o.LoginPath;
+
                 });
 
             services.AddControllers().AddNewtonsoftJson();

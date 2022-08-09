@@ -1,4 +1,7 @@
 ﻿using BookStore.API.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -18,9 +21,7 @@ namespace BookStore.API.Repository
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
 
-        public AccountRepository(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration)
+        public AccountRepository(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -54,6 +55,11 @@ namespace BookStore.API.Repository
                 new Claim(ClaimTypes.Name, signInModel.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            var claimsIdentity = new ClaimsIdentity(
+            authClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principle = new ClaimsPrincipal(claimsIdentity);
+            var authProperties = new AuthenticationProperties();
             var authSigninKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]));
 
             var token = new JwtSecurityToken(
@@ -66,5 +72,7 @@ namespace BookStore.API.Repository
             
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+       
     }
 }
